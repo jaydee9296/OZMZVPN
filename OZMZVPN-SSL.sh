@@ -20,7 +20,7 @@ PASSWORD="JohnDave.me9296"
 
 # Default SSH, OpenVPN, Stunnel Ports values
 DEFAULT_OPENVPN_PORT="1194"
-DEFAULT_OPENVPN_SSL_PORT="587"
+DEFAULT_OPENVPN_SSL_PORT="443"
 
 read -p "Enter OpenVPN Port: " -e -i $DEFAULT_OPENVPN_PORT OPENVPN_PORT
 while [[ "$OPENVPN_PORT" == "" ]]
