@@ -191,7 +191,7 @@ private-address: ::ffff:0:0/96' > /etc/unbound/openvpn.conf
 }
 
 function installQuestions () {
-	echo "Welcome to the OZMZVPN-OpenVPN!"
+	echo "Welcome to the OZMZVPN!"
 	echo "The git repository is available at: https://github.com/jaydee9296/OZMZVPN"
 	echo ""
 
@@ -1221,7 +1221,7 @@ function removeOpenVPN () {
 
 function manageMenu () {
 	clear
-	echo "Welcome to OZMZVPN-OpenVPN!"
+	echo "Welcome to OZMZVPN!"
 	echo "The git repository is available at: https://github.com/jaydee9296/OZMZVPN"
 	echo ""
 	echo "It looks like OpenVPN is already installed."
