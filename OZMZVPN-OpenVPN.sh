@@ -716,10 +716,12 @@ user nobody
 group $NOGROUP
 persist-key
 persist-tun
-keepalive 10 120
+keepalive 10 60
 topology subnet
 server 9.2.96.0 255.255.255.0
 ifconfig-pool-persist ipp.txt" >> /etc/openvpn/server.conf
+push "dhcp-option DNS 8.8.8.8"
+push "dhcp-option DNS 8.8.4.4"
 
 	# DNS resolvers
 	case $DNS in
@@ -823,6 +825,15 @@ ncp-ciphers $CIPHER
 tls-server
 tls-version-min 1.2
 tls-cipher $CC_CIPHER
+sndbuf 0
+rcvbuf 0
+tun-mtu 1500
+mssfix 1500
+push "socket-flags TCP_NODELAY"
+push "sndbuf 0"
+push "rcvbuf 0"
+push "comp-lzo yes"
+script-security 3
 status /var/log/openvpn/status.log
 verb 3" >> /etc/openvpn/server.conf
 
@@ -963,13 +974,18 @@ persist-tun
 remote-cert-tls server
 verify-x509-name OZMZVPN name
 auth $HMAC_ALG
+tun-mtu 1500
+mssfix 1500
 auth-nocache
 cipher $CIPHER
 tls-client
 tls-version-min 1.2
 tls-cipher $CC_CIPHER
+keepalive 10 60
+connect-retry-max 3
+script-security 2
 setenv opt block-outside-dns # Prevent Windows 10 DNS leak
-verb 3" >> /etc/openvpn/client-template.txt
+verb 2" >> /etc/openvpn/client-template.txt
 
 if [[ $COMPRESSION_ENABLED == "y"  ]]; then
 	echo "compress $COMPRESSION_ALG" >> /etc/openvpn/client-template.txt
