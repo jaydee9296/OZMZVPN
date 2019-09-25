@@ -5,10 +5,6 @@ if [[ "$EUID" -ne 0 ]]; then
     exit 2
 fi
 
-echo -e "\t-------------------------------------------------------\n"
-echo -e "\t|   SSL over SSH & OpenVPN Script by Edmar Hub :]x]   |\n"
-echo -e "\t-------------------------------------------------------\n"
-
 read -n1 -r -p "Press any key to start ..."
 clear
 
