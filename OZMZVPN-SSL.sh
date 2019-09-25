@@ -19,8 +19,6 @@ EMAIL="johndave10010001010000@gmail.com"
 PASSWORD="JohnDave.me9296"
 
 # Default SSH, OpenVPN, Stunnel Ports values
-DEFAULT_SSH_PORT="22"
-DEFAULT_SSH_SSL_PORT="443"
 DEFAULT_OPENVPN_PORT="1194"
 DEFAULT_OPENVPN_SSL_PORT="587"
 
@@ -52,9 +50,6 @@ apt-get -y update
 apt-get -y install stunnel4 openssl
 
 echo "cert = /etc/stunnel/stunnel.pem
-[ssh] 
-accept = $SSH_SSL_PORT
-connect = 127.0.0.1:$SSH_PORT
 
 [openvpn]
 accept = $OPENVPN_SSL_PORT
