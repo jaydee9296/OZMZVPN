@@ -15,7 +15,7 @@ function tunAvailable () {
 }
 
 function checkOS () {
-		elif [[ "$ID" == "ubuntu" ]];then
+		if [[ "$ID" == "ubuntu" ]];then
 			OS="ubuntu"
 			if [[ ! $VERSION_ID =~ (16.04|18.04|19.04) ]]; then
 				echo "⚠️ Your version of Ubuntu is not supported."
@@ -82,7 +82,7 @@ prefetch: yes' >> /etc/unbound/unbound.conf
 	qname-minimisation: yes
 	prefetch: yes' > /etc/unbound/unbound.conf
 		fi
-		
+
 	else # Unbound is already installed
 		echo 'include: /etc/unbound/openvpn.conf' >> /etc/unbound/unbound.conf
 
