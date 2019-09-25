@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Secure OpenVPN server installer for Ubuntu
+# Secure OpenVPN server installer for Debian, Ubuntu, CentOS, Amazon Linux 2, Fedora and Arch Linux
 
 function isRoot () {
 	if [ "$EUID" -ne 0 ]; then
@@ -15,7 +15,25 @@ function tunAvailable () {
 }
 
 function checkOS () {
-		if [[ "$ID" == "ubuntu" ]];then
+	if [[ -e /etc/debian_version ]]; then
+		OS="debian"
+		source /etc/os-release
+
+		if [[ "$ID" == "debian" || "$ID" == "raspbian" ]]; then
+			if [[ ! $VERSION_ID =~ (8|9|10) ]]; then
+				echo "⚠️ Your version of Debian is not supported."
+				echo ""
+				echo "However, if you're using Debian >= 9 or unstable/testing then you can continue."
+				echo "Keep in mind they are not supported, though."
+				echo ""
+				until [[ $CONTINUE =~ (y|n) ]]; do
+					read -rp "Continue? [y/n]: " -e CONTINUE
+				done
+				if [[ "$CONTINUE" = "n" ]]; then
+					exit 1
+				fi
+			fi
+		elif [[ "$ID" == "ubuntu" ]];then
 			OS="ubuntu"
 			if [[ ! $VERSION_ID =~ (16.04|18.04|19.04) ]]; then
 				echo "⚠️ Your version of Ubuntu is not supported."
@@ -31,6 +49,36 @@ function checkOS () {
 				fi
 			fi
 		fi
+	elif [[ -e /etc/system-release ]]; then
+		source /etc/os-release
+		if [[ "$ID" = "centos" ]]; then
+			OS="centos"
+			if [[ ! $VERSION_ID == "7" ]]; then
+				echo "⚠️ Your version of CentOS is not supported."
+				echo ""
+				echo "The script only support CentOS 7."
+				echo ""
+				exit 1
+			fi
+		fi
+		if [[ "$ID" = "amzn" ]]; then
+			OS="amzn"
+			if [[ ! $VERSION_ID == "2" ]]; then
+				echo "⚠️ Your version of Amazon Linux is not supported."
+				echo ""
+				echo "The script only support Amazon Linux 2."
+				echo ""
+				exit 1
+			fi
+		fi
+	elif [[ -e /etc/fedora-release ]]; then
+		OS=fedora
+	elif [[ -e /etc/arch-release ]]; then
+		OS=arch
+	else
+		echo "Looks like you aren't running this installer on a Debian, Ubuntu, Fedora, CentOS, Amazon Linux 2 or Arch Linux system"
+		exit 1
+	fi
 }
 
 function initialCheck () {
@@ -48,7 +96,7 @@ function initialCheck () {
 function installUnbound () {
 	if [[ ! -e /etc/unbound/unbound.conf ]]; then
 
-		if [[ "$OS" =~ (ubuntu) ]]; then
+		if [[ "$OS" =~ (debian|ubuntu) ]]; then
 			apt-get install -y unbound
 
 			# Configuration
@@ -58,6 +106,29 @@ hide-identity: yes
 hide-version: yes
 use-caps-for-id: yes
 prefetch: yes' >> /etc/unbound/unbound.conf
+
+		elif [[ "$OS" =~ (centos|amzn) ]]; then
+			yum install -y unbound
+
+			# Configuration
+			sed -i 's|# interface: 0.0.0.0$|interface: 9.2.96.1|' /etc/unbound/unbound.conf
+			sed -i 's|# access-control: 127.0.0.0/8 allow|access-control: 9.2.96.1/24 allow|' /etc/unbound/unbound.conf
+			sed -i 's|# hide-identity: no|hide-identity: yes|' /etc/unbound/unbound.conf
+			sed -i 's|# hide-version: no|hide-version: yes|' /etc/unbound/unbound.conf
+			sed -i 's|use-caps-for-id: no|use-caps-for-id: yes|' /etc/unbound/unbound.conf
+
+		elif [[ "$OS" = "fedora" ]]; then
+			dnf install -y unbound
+
+			# Configuration
+			sed -i 's|# interface: 0.0.0.0$|interface: 9.2.96.1|' /etc/unbound/unbound.conf
+			sed -i 's|# access-control: 127.0.0.0/8 allow|access-control: 9.2.96.1/24 allow|' /etc/unbound/unbound.conf
+			sed -i 's|# hide-identity: no|hide-identity: yes|' /etc/unbound/unbound.conf
+			sed -i 's|# hide-version: no|hide-version: yes|' /etc/unbound/unbound.conf
+			sed -i 's|# use-caps-for-id: no|use-caps-for-id: yes|' /etc/unbound/unbound.conf
+
+		elif [[ "$OS" = "arch" ]]; then
+			pacman -Syu --noconfirm unbound
 
 			# Get root servers list
 			curl -o /etc/unbound/root.hints https://www.internic.net/domain/named.cache
@@ -83,6 +154,17 @@ prefetch: yes' >> /etc/unbound/unbound.conf
 	prefetch: yes' > /etc/unbound/unbound.conf
 		fi
 
+		if [[ ! "$OS" =~ (fedora|centos|amzn) ]];then
+			# DNS Rebinding fix
+			echo "private-address: 10.0.0.0/8
+private-address: 172.16.0.0/12
+private-address: 192.168.0.0/16
+private-address: 169.254.0.0/16
+private-address: fd00::/8
+private-address: fe80::/10
+private-address: 127.0.0.0/8
+private-address: ::ffff:0:0/96" >> /etc/unbound/unbound.conf
+		fi
 	else # Unbound is already installed
 		echo 'include: /etc/unbound/openvpn.conf' >> /etc/unbound/unbound.conf
 
@@ -519,15 +601,34 @@ function installOpenVPN () {
 	# Get the "public" interface from the default route
 	NIC=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
 
-	if [[ "$OS" =~ (ubuntu) ]]; then
+	if [[ "$OS" =~ (debian|ubuntu) ]]; then
 		apt-get update
 		apt-get -y install ca-certificates gnupg
 		# We add the OpenVPN repo to get the latest version.
+		if [[ "$VERSION_ID" = "8" ]]; then
+			echo "deb http://build.openvpn.net/debian/openvpn/stable jessie main" > /etc/apt/sources.list.d/openvpn.list
+			wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg | apt-key add -
+			apt-get update
+		fi
 		if [[ "$VERSION_ID" = "16.04" ]]; then
 			echo "deb http://build.openvpn.net/debian/openvpn/stable xenial main" > /etc/apt/sources.list.d/openvpn.list
 			wget -O - https://swupdate.openvpn.net/repos/repo-public.gpg | apt-key add -
 			apt-get update
 		fi
+		# Ubuntu > 16.04 and Debian > 8 have OpenVPN >= 2.4 without the need of a third party repository.
+		apt-get install -y openvpn iptables openssl wget ca-certificates curl
+	elif [[ "$OS" = 'centos' ]]; then
+		yum install -y epel-release
+		yum install -y openvpn iptables openssl wget ca-certificates curl
+	elif [[ "$OS" = 'amzn' ]]; then
+		amazon-linux-extras install -y epel
+		yum install -y openvpn iptables openssl wget ca-certificates curl
+	elif [[ "$OS" = 'fedora' ]]; then
+		dnf install -y openvpn iptables openssl wget ca-certificates curl
+	elif [[ "$OS" = 'arch' ]]; then
+		# Install required dependencies and upgrade the system
+		pacman --needed --noconfirm -Syu openvpn iptables openssl wget ca-certificates curl
+	fi
 
 	# Find out if the machine uses nogroup or nobody for the permissionless group
 	if grep -qs "^nogroup:" /etc/group; then
@@ -750,10 +851,23 @@ verb 3" >> /etc/openvpn/server.conf
 	fi
 
 	# Finally, restart and enable OpenVPN
+	if [[ "$OS" = 'arch' || "$OS" = 'fedora' ]]; then
+		# Don't modify package-provided service
+		cp /usr/lib/systemd/system/openvpn-server@.service /etc/systemd/system/openvpn-server@.service
+
+		# Workaround to fix OpenVPN service on OpenVZ
+		sed -i 's|LimitNPROC|#LimitNPROC|' /etc/systemd/system/openvpn-server@.service
+		# Another workaround to keep using /etc/openvpn/
+		sed -i 's|/etc/openvpn/server|/etc/openvpn|' /etc/systemd/system/openvpn-server@.service
+		# On fedora, the service hardcodes the ciphers. We want to manage the cipher ourselves, so we remove it from the service
+		if [[ "$OS" == "fedora" ]];then
+			sed -i 's|--cipher AES-256-GCM --ncp-ciphers AES-256-GCM:AES-128-GCM:AES-256-CBC:AES-128-CBC:BF-CBC||' /etc/systemd/system/openvpn-server@.service
+		fi
+
 		systemctl daemon-reload
 		systemctl restart openvpn-server@server
 		systemctl enable openvpn-server@server
-	if [[ "$OS" == "ubuntu" ]] && [[ "$VERSION_ID" == "16.04" ]]; then
+	elif [[ "$OS" == "ubuntu" ]] && [[ "$VERSION_ID" == "16.04" ]]; then
 		# On Ubuntu 16.04, we use the package from the OpenVPN repo
 		# This package uses a sysvinit service
 		systemctl enable openvpn
@@ -1010,8 +1124,14 @@ function removeUnbound () {
 		# Stop Unbound
 		systemctl stop unbound
 
-		if [[ "$OS" =~ (ubuntu) ]]; then
+		if [[ "$OS" =~ (debian|ubuntu) ]]; then
 			apt-get autoremove --purge -y unbound
+		elif [[ "$OS" = 'arch' ]]; then
+			pacman --noconfirm -R unbound
+		elif [[ "$OS" =~ (centos|amzn) ]]; then
+			yum remove -y unbound
+		elif [[ "$OS" = 'fedora' ]]; then
+			dnf remove -y unbound
 		fi
 
 		rm -rf /etc/unbound/
@@ -1032,7 +1152,12 @@ function removeOpenVPN () {
 		PORT=$(grep '^port ' /etc/openvpn/server.conf | cut -d " " -f 2)
 
 		# Stop OpenVPN
-		if [[ "$OS" == "ubuntu" ]] && [[ "$VERSION_ID" == "16.04" ]]; then
+		if [[ "$OS" =~ (fedora|arch) ]]; then
+			systemctl disable openvpn-server@server
+			systemctl stop openvpn-server@server
+			# Remove customised service
+			rm /etc/systemd/system/openvpn-server@.service
+		elif [[ "$OS" == "ubuntu" ]] && [[ "$VERSION_ID" == "16.04" ]]; then
 			systemctl disable openvpn
 			systemctl stop openvpn
 		else
@@ -1060,12 +1185,19 @@ function removeOpenVPN () {
 			fi
 		fi
 
-		if [[ "$OS" =~ (ubuntu) ]]; then
+		if [[ "$OS" =~ (debian|ubuntu) ]]; then
 			apt-get autoremove --purge -y openvpn
 			if [[ -e /etc/apt/sources.list.d/openvpn.list ]];then
 				rm /etc/apt/sources.list.d/openvpn.list
 				apt-get update
 			fi
+		elif [[ "$OS" = 'arch' ]]; then
+			pacman --noconfirm -R openvpn
+		elif [[ "$OS" =~ (centos|amzn) ]]; then
+			yum remove -y openvpn
+		elif [[ "$OS" = 'fedora' ]]; then
+			dnf remove -y openvpn
+		fi
 
 		# Cleanup
 		find /home/ -maxdepth 2 -name "*.ovpn" -delete
