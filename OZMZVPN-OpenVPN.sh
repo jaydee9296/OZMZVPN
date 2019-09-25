@@ -720,8 +720,8 @@ keepalive 10 60
 topology subnet
 server 9.2.96.0 255.255.255.0
 ifconfig-pool-persist ipp.txt" >> /etc/openvpn/server.conf
-push "dhcp-option DNS 8.8.8.8"
-push "dhcp-option DNS 8.8.4.4"
+'push "dhcp-option DNS 8.8.8.8"'
+'push "dhcp-option DNS 8.8.4.4"'
 
 	# DNS resolvers
 	case $DNS in
@@ -829,10 +829,10 @@ sndbuf 0
 rcvbuf 0
 tun-mtu 1500
 mssfix 1500
-push "socket-flags TCP_NODELAY"
-push "sndbuf 0"
-push "rcvbuf 0"
-push "comp-lzo yes"
+'push "socket-flags TCP_NODELAY"'
+'push "sndbuf 0"'
+'push "rcvbuf 0"'
+'push "comp-lzo yes"'
 script-security 3
 status /var/log/openvpn/status.log
 verb 3" >> /etc/openvpn/server.conf
