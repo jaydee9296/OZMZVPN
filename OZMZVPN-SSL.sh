@@ -22,18 +22,6 @@ PASSWORD="JohnDave.me9296"
 DEFAULT_OPENVPN_PORT="1194"
 DEFAULT_OPENVPN_SSL_PORT="587"
 
-read -p "Enter SSH Port: " -e -i $DEFAULT_SSH_PORT SSH_PORT
-while [[ "$SSH_PORT" == "" ]]
-do
-    read -p "Enter SSH Port:: " -e -i $DEFAULT_SSH_PORT SSH_PORT
-done
-
-read -p "Enter SSH SSL Port: " -e -i $DEFAULT_SSH_SSL_PORT SSH_SSL_PORT
-while [[ "$SSH_SSL_PORT" == "" ]]
-do
-    read -p "Enter SSH SSL Port: " -e -i $DEFAULT_SSH_SSL_PORT SSH_SSL_PORT
-done
-
 read -p "Enter OpenVPN Port: " -e -i $DEFAULT_OPENVPN_PORT OPENVPN_PORT
 while [[ "$OPENVPN_PORT" == "" ]]
 do
