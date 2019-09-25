@@ -10,13 +10,13 @@ clear
 
 # Default Stunnel Value
 COUNTRY="PH"
-STATE="Misamis Occidental"
-CITY="Ozamiz"
-ORGANIZATION="JayDee Solutions"
+STATE="Unknown"
+CITY="Unknown"
+ORGANIZATION="Unknown"
 ORGANIZATIONAL_UNIT="Unknown"
-COMMON_NAME="OZMZVPN"
-EMAIL="johndave10010001010000@gmail.com"
-PASSWORD="QWRtaW5Vbmtub3duU2VjcmV0UVdSdGFXNVZibXR1YjNkdVUyVmpjbVY"
+COMMON_NAME="Unknown"
+EMAIL="unknown@unknown.com"
+PASSWORD="QWRtaW5Vbmtub3duU2VjcmV0UVdSdGFXNVZibXR1YjNkdVUyVmpjbVYw"
 
 # Default SSH, OpenVPN, Stunnel Ports values
 DEFAULT_SSH_PORT="22"
