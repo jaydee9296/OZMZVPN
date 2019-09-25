@@ -1060,7 +1060,8 @@ function removeOpenVPN () {
 				rm /etc/apt/sources.list.d/openvpn.list
 				apt-get update
 			fi
-			
+		fi
+
 		# Cleanup
 		find /home/ -maxdepth 2 -name "*.ovpn" -delete
 		find /root/ -maxdepth 1 -name "*.ovpn" -delete
