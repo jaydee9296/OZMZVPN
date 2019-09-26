@@ -11,7 +11,7 @@ cd vpn
 mkdir OZMZVPN
 cd OZMZVPN
 mkdir accounts
-wget https://raw.githubusercontent.com/jaydee9296/OZMZVPN/master/OZMZVPN-OpenVPN.sh
+wget https://raw.githubusercontent.com/johndave9296/OZMZVPN/master/OZMZVPN-OpenVPN.sh
 chmod +x OZMZVPN-OpenVPN.sh
 ```
 
@@ -253,4 +253,4 @@ The script supports both and uses `tls-crypt` by default.
 
 ## Credits & Licence
 
-Many thanks to the [contributors](https://github.com/jaydee9296/OZMZVPN/graphs/contributors).
+Many thanks to the [contributors](https://github.com/johndave9296/OZMZVPN/graphs/contributors).
