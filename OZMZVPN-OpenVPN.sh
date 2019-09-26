@@ -828,7 +828,8 @@ tun-mtu 1500
 mssfix 1500
 script-security 3
 status /var/log/openvpn/status.log
-verb 3" >> /etc/openvpn/server.conf
+verb 3
+management 127.0.0.1 9296" >> /etc/openvpn/server.conf
 
 	# Create log dir
 	mkdir -p /var/log/openvpn
