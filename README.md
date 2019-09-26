@@ -82,7 +82,7 @@ To be noted:
 
 **A:** I recommend these:
 
-- [Vultr](https://www.vultr.com/?ref=8238869-4F): Worldwide locations, IPv6 support, starting at $3.50/month
+- [Vultr](https://link.john-dave.ml/vultr): Worldwide locations, IPv6 support, starting at $3.50/month
 - [Digital Ocean](https://link.john-dave.ml/digitalocean): Worldwide locations, IPv6 support, starting at $5/month
 
 ---
