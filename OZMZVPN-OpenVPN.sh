@@ -30,7 +30,6 @@ function checkOS () {
 				if [[ "$CONTINUE" = "n" ]]; then
 					exit 1
 				fi
-			fi
 	else
 		echo "Looks like you aren't running this installer on a Debian, Ubuntu, Fedora, CentOS, Amazon Linux 2 or Arch Linux system"
 		exit 1
