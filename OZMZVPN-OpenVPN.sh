@@ -17,6 +17,7 @@ function tunAvailable () {
 function checkOS () {
 	if [[ "$ID" == "ubuntu" ]];then
 			OS="ubuntu"
+			source /etc/os-release
 			if [[ ! $VERSION_ID =~ (16.04|18.04|19.04) ]]; then
 				echo "⚠️ Your version of Ubuntu is not supported."
 				echo ""
