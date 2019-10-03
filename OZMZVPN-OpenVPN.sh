@@ -978,7 +978,7 @@ tls-cipher $CC_CIPHER
 keepalive 10 60
 connect-retry-max 3
 script-security 2
-setenv opt block-outside-dns # Prevent Windows 10 DNS leak
+setenv opt block-outside-dns
 verb 2" >> /etc/openvpn/client-template.txt
 
 if [[ $COMPRESSION_ENABLED == "y"  ]]; then
