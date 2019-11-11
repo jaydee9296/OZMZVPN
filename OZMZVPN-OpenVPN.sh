@@ -53,7 +53,7 @@ function checkOS () {
 		source /etc/os-release
 		if [[ "$ID" = "centos" ]]; then
 			OS="centos"
-			if [[ ! $VERSION_ID == "7" ]]; then
+			if [[ ! $VERSION_ID =~ (7|8) ]]; then
 				echo "⚠️ Your version of CentOS is not supported."
 				echo ""
 				echo "The script only support CentOS 7."
@@ -619,7 +619,7 @@ function installOpenVPN () {
 		apt-get install -y openvpn iptables openssl wget ca-certificates curl
 	elif [[ "$OS" = 'centos' ]]; then
 		yum install -y epel-release
-		yum install -y openvpn iptables openssl wget ca-certificates curl
+		yum install -y openvpn iptables openssl wget ca-certificates curl tar
 	elif [[ "$OS" = 'amzn' ]]; then
 		amazon-linux-extras install -y epel
 		yum install -y openvpn iptables openssl wget ca-certificates curl
@@ -650,7 +650,7 @@ function installOpenVPN () {
 	chown -R root:root /etc/openvpn/easy-rsa/
 	rm -f ~/EasyRSA-unix-v${version}.tgz
 
-	cd /etc/openvpn/easy-rsa/
+	cd /etc/openvpn/easy-rsa/ || return
 	case $CERT_TYPE in
 		1)
 			echo "set_var EASYRSA_ALGO ec" > vars
@@ -666,17 +666,19 @@ function installOpenVPN () {
 	SERVER_NAME="server_$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)"
 	echo "set_var EASYRSA_REQ_CN $SERVER_CN" >> vars
 
-	# Workaround to remove unharmful error until easy-rsa 3.0.7
-	# https://github.com/OpenVPN/easy-rsa/issues/261
-	sed -i 's/^RANDFILE/#RANDFILE/g' pki/openssl-easyrsa.cnf
-
 	# Create the PKI, set up the CA, the DH params and the server certificate
 	./easyrsa init-pki
+
+    # Workaround to remove unharmful error until easy-rsa 3.0.7
+    # https://github.com/OpenVPN/easy-rsa/issues/261
+    sed -i 's/^RANDFILE/#RANDFILE/g' pki/openssl-easyrsa.cnf
+
 	./easyrsa --batch build-ca nopass
 
 	if [[ $DH_TYPE == "2" ]]; then
 		# ECDH keys are generated on-the-fly so we don't need to generate them beforehand
 		openssl dhparam -out dh.pem $DH_KEY_SIZE
+		
 	fi
 
 	./easyrsa build-server-full "OZMZVPN" nopass
@@ -852,7 +854,7 @@ management 127.0.0.1 9296" >> /etc/openvpn/server.conf
 	fi
 
 	# Finally, restart and enable OpenVPN
-	if [[ "$OS" = 'arch' || "$OS" = 'fedora' ]]; then
+	if [[ "$OS" = 'arch' || "$OS" = 'fedora' || "$OS" = 'centos' ]]; then
 		# Don't modify package-provided service
 		cp /usr/lib/systemd/system/openvpn-server@.service /etc/systemd/system/openvpn-server@.service
 
@@ -1091,7 +1093,7 @@ function revokeClient () {
 	fi
 
 	CLIENT=$(tail -n +2 /etc/openvpn/easy-rsa/pki/index.txt | grep "^V" | cut -d '=' -f 2 | sed -n "$CLIENTNUMBER"p)
-	cd /etc/openvpn/easy-rsa/
+	cd /etc/openvpn/easy-rsa/ || return
 	./easyrsa --batch revoke "$CLIENT"
 	EASYRSA_CRL_DAYS=3650 ./easyrsa gen-crl
 	# Cleanup
@@ -1147,13 +1149,14 @@ function removeUnbound () {
 
 function removeOpenVPN () {
 	echo ""
+	# shellcheck disable=SC2034
 	read -rp "Do you really want to remove OpenVPN? [y/n]: " -e -i n REMOVE
 	if [[ "$REMOVE" = 'y' ]]; then
 		# Get OpenVPN port from the configuration
 		PORT=$(grep '^port ' /etc/openvpn/server.conf | cut -d " " -f 2)
 
 		# Stop OpenVPN
-		if [[ "$OS" =~ (fedora|arch) ]]; then
+		if [[ "$OS" =~ (fedora|arch|centos) ]]; then
 			systemctl disable openvpn-server@server
 			systemctl stop openvpn-server@server
 			# Remove customised service
