@@ -51,6 +51,9 @@ function checkOS () {
 		fi
 	elif [[ -e /etc/system-release ]]; then
 		source /etc/os-release
+		if [[ "$ID" = "fedora" ]]; then
+			OS="fedora"
+		fi
 		if [[ "$ID" = "centos" ]]; then
 			OS="centos"
 			if [[ ! $VERSION_ID =~ (7|8) ]]; then
@@ -71,8 +74,6 @@ function checkOS () {
 				exit 1
 			fi
 		fi
-	elif [[ -e /etc/fedora-release ]]; then
-		OS=fedora
 	elif [[ -e /etc/arch-release ]]; then
 		OS=arch
 	else
