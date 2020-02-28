@@ -83,8 +83,8 @@ To be noted:
 
 **A:** I recommend these:
 
-- [Vultr](https://link.john-dave.ml/vultr): Worldwide locations, IPv6 support, starting at $3.50/month
-- [Digital Ocean](https://link.john-dave.ml/digitalocean): Worldwide locations, IPv6 support, starting at $5/month
+- [Vultr](http://gg.gg/johndave9296-vultr): Worldwide locations, IPv6 support, starting at $3.50/month
+- [Digital Ocean](http://gg.gg/johndave9296-do): Worldwide locations, IPv6 support, starting at $5/month
 
 ---
 
@@ -92,11 +92,11 @@ To be noted:
 
 **A:** If possible, an official OpenVPN 2.4 client.
 
-- Windows: [The official OpenVPN community client]().
-- Linux: The `openvpn` package from your distribution. There is an [official APT repository](https://link.john-dave.ml/debian-ubuntu) for Debian/Ubuntu based distributions.
-- macOS: [Tunnelblick](https://link.john-dave.ml/mac).
-- Android: [OpenVPN for Android](https://link.john-dave.ml/openvpn-for-android) or [OpenVPN Connect](https://link.john-dave.ml/openvpn-connect).
-- iOS: [The official OpenVPN Connect client](https://link.john-dave.ml/openvpn-connect-ios).
+- Windows: [The official OpenVPN community client](https://openvpn.net/index.php/download/community-downloads.html).
+- Linux: The `openvpn` package from your distribution. There is an [official APT repository](https://community.openvpn.net/openvpn/wiki/OpenvpnSoftwareRepos) for Debian/Ubuntu based distributions.
+- macOS: [Tunnelblick](https://tunnelblick.net/), [Viscosity](https://www.sparklabs.com/viscosity/).
+- Android: [OpenVPN for Android](https://play.google.com/store/apps/details?id=de.blinkt.openvpn) or [OpenVPN Connect](https://play.google.com/store/apps/details?id=net.openvpn.openvpn).
+- iOS: [The official OpenVPN Connect client](https://itunes.apple.com/us/app/openvpn-connect/id590379981).
 
 ---
 
