@@ -250,8 +250,8 @@ pre_install(){
 
     # Set shadowsocks-libev config password
     echo "Please input password for shadowsocks-libev:"
-    read -p "(Default password: teddysun.com):" shadowsockspwd
-    [ -z "${shadowsockspwd}" ] && shadowsockspwd="teddysun.com"
+    read -p "(Default password:):" shadowsockspwd
+    [ -z "${shadowsockspwd}" ] && shadowsockspwd="OZMZVPN"
     echo
     echo "---------------------------"
     echo "password = ${shadowsockspwd}"
@@ -446,7 +446,6 @@ install_shadowsocks(){
     echo -e "Your Password         : \033[41;37m ${shadowsockspwd} \033[0m"
     echo -e "Your Encryption Method: \033[41;37m ${shadowsockscipher} \033[0m"
     echo
-    echo "Welcome to visit:https://teddysun.com/358.html"
     echo "Enjoy it!"
     echo
 }
