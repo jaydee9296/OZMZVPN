@@ -293,7 +293,7 @@ function installQuestions () {
 	echo "   11) AdGuard DNS (Russia)"
 	echo "   12) NextDNS (Worldwide)"
 	echo "   13) Custom"
-	until [[ "$DNS" =~ ^[0-9]+$ ]] && [ "$DNS" -ge 1 ] && [ "$DNS" -le 12 ]; do
+	until [[ "$DNS" =~ ^[0-9]+$ ]] && [ "$DNS" -ge 1 ] && [ "$DNS" -le 13 ]; do
 		read -rp "DNS [1-12]: " -e -i 3 DNS
 			if [[ $DNS == 2 ]] && [[ -e /etc/unbound/unbound.conf ]]; then
 				echo ""
@@ -311,7 +311,7 @@ function installQuestions () {
 					unset DNS
 					unset CONTINUE
 				fi
-			elif [[ $DNS == "12" ]]; then
+			elif [[ $DNS == "13" ]]; then
 				until [[ "$DNS1" =~ ^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$ ]]; do
 					read -rp "Primary DNS: " -e DNS1
 				done
@@ -621,7 +621,7 @@ function installOpenVPN () {
 		apt-get install -y openvpn iptables openssl wget ca-certificates curl
 	elif [[ "$OS" = 'centos' ]]; then
 		yum install -y epel-release
-		yum install -y openvpn iptables openssl wget ca-certificates curl tar
+		yum install -y openvpn iptables openssl wget ca-certificates curl tar 'policycoreutils-python*'
 	elif [[ "$OS" = 'amzn' ]]; then
 		amazon-linux-extras install -y epel
 		yum install -y openvpn iptables openssl wget ca-certificates curl
