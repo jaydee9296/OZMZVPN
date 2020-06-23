@@ -58,18 +58,15 @@ The script supports these OS and architectures:
 
 |                | i386 | amd64 | armhf | arm64 |
 | -------------- | ---- | ----- | ----- | ----- |
-| Amazon Linux 2 |  ❔  |  ✅  |   ❔  |   ❔  |
-|  Arch Linux    |  ❔  |  ✅  |   ❔  |   ✅  |
-|   Centos 8     |  ❌  |  ✅  |   ❔  |   ❔  |
-|   CentOS 7     |  ❔  |  ✅  |   ❌  |   ✅  |
-|   Debian 8     |  ✅  |  ✅  |   ❌  |   ❌  |
-|   Debian 9     |  ❌  |  ✅  |   ✅  |   ✅  |
-|   Debian 10    |  ❔  |  ✅  |   ✅  |   ❔  |
-|   Fedora 27    |  ❔  |  ✅  |   ❔  |   ❔  |
-|   Fedora 28    |  ❔  |  ✅  |   ❔  |   ❔  |
-| Ubuntu 16.04   |  ✅  |  ✅  |   ❌  |   ❌  |
-| Ubuntu 18.04   |  ❌  |  ✅  |   ✅  |   ✅  |
-| Ubuntu 19.04   |  ❌  |  ✅  |   ✅  |   ✅  |
+| Amazon Linux 2  | ❔   | ✅    | ❔    | ❔    |
+| Arch Linux      | ❔   | ✅    | ❔    | ✅    |
+| CentOS 7        | ❔   | ✅    | ❌    | ✅    |
+| CentOS 8        | ❌   | ✅    | ❔    | ❔    |
+| Debian 8        | ✅   | ✅    | ❌    | ❌    |
+| Debian >= 9     | ❌   | ✅    | ✅    | ✅    |
+| Fedora >= 27    | ❔   | ✅    | ❔    | ❔    |
+| Ubuntu 16.04    | ✅   | ✅    | ❌    | ❌    |
+| Ubuntu >= 18.04 | ❌   | ✅    | ✅    | ✅    |
 
 To be noted:
 
@@ -158,15 +155,15 @@ By default, OpenVPN uses `BF-CBC` as the data channel cipher. Blowfish is an old
 >
 > Using BF-CBC is no longer recommended, because of its 64-bit block size. This small block size allows attacks based on collisions, as demonstrated by SWEET32. See https://community.openvpn.net/openvpn/wiki/SWEET32 for details.
 
->Security researchers at INRIA published an attack on 64-bit block ciphers, such as 3DES and Blowfish. They show that they are able to recover plaintext when the same data is sent often enough, and show how they can use cross-site scripting vulnerabilities to send data of interest often enough. This works over HTTPS, but also works for HTTP-over-OpenVPN. See ​https://sweet32.info/ for a much better and more elaborate explanation.
+> Security researchers at INRIA published an attack on 64-bit block ciphers, such as 3DES and Blowfish. They show that they are able to recover plaintext when the same data is sent often enough, and show how they can use cross-site scripting vulnerabilities to send data of interest often enough. This works over HTTPS, but also works for HTTP-over-OpenVPN. See ​https://sweet32.info/ for a much better and more elaborate explanation.
 >
 > OpenVPN's default cipher, BF-CBC, is affected by this attack.
 
-Indeed, AES is today's standard. It's the fastest and more secure cipher available today. [SEED](https://en.wikipedia.org/wiki/SEED) and [Camellia](https://en.wikipedia.org/wiki/Camellia_(cipher)) are not vulnerable to date but are slower than AES and relatively less trusted.
+Indeed, AES is today's standard. It's the fastest and more secure cipher available today. [SEED](https://en.wikipedia.org/wiki/SEED) and [Camellia](https://en.wikipedia.org/wiki/Camellia_(cipher)>) are not vulnerable to date but are slower than AES and relatively less trusted.
 
 > Of the currently supported ciphers, OpenVPN currently recommends using AES-256-CBC or AES-128-CBC. OpenVPN 2.4 and newer will also support GCM. For 2.4+, we recommend using AES-256-GCM or AES-128-GCM.
 
-AES-256 is 40% slower than AES-128, and there isn't any real reason to use a 256 bits key over a 128 bits key with AES. (Source : [1](http://security.stackexchange.com/questions/14068/why-most-people-use-256-bit-encryption-instead-of-128-bit),[2](http://security.stackexchange.com/questions/6141/amount-of-simple-operations-that-is-safely-out-of-reach-for-all-humanity/6149#6149)). Moreover, AES-256 is more vulnerable to [Timing attacks](https://en.wikipedia.org/wiki/Timing_attack).
+AES-256 is 40% slower than AES-128, and there isn't any real reason to use a 256 bits key over a 128 bits key with AES. (Source: [1](http://security.stackexchange.com/questions/14068/why-most-people-use-256-bit-encryption-instead-of-128-bit),[2](http://security.stackexchange.com/questions/6141/amount-of-simple-operations-that-is-safely-out-of-reach-for-all-humanity/6149#6149)). Moreover, AES-256 is more vulnerable to [Timing attacks](https://en.wikipedia.org/wiki/Timing_attack).
 
 AES-GCM is an [AEAD cipher](https://en.wikipedia.org/wiki/Authenticated_encryption) which means it simultaneously provides confidentiality, integrity, and authenticity assurances on the data.
 
@@ -181,7 +178,7 @@ The script supports the following ciphers:
 
 And defaults to `AES-128-GCM`.
 
-OpenVPN 2.4 added a feature called "NCP": *Negotiable Crypto Parameters*. It means you can provide a cipher suite like with HTTPS. It is set to `AES-256-GCM:AES-128-GCM` by default and overrides the `--cipher` parameter when used with an OpenVPN 2.4 client. For the sake of simplicity, the script set both the `--cipher` and `--ncp-cipher` to the cipher chosen above.
+OpenVPN 2.4 added a feature called "NCP": _Negotiable Crypto Parameters_. It means you can provide a cipher suite like with HTTPS. It is set to `AES-256-GCM:AES-128-GCM` by default and overrides the `--cipher` parameter when used with an OpenVPN 2.4 client. For the sake of simplicity, the script set both the `--cipher` and `--ncp-cipher` to the cipher chosen above.
 
 ### Control channel
 
@@ -242,6 +239,7 @@ About `tls-crypt`:
 > Encrypt and authenticate all control channel packets with the key from keyfile. (See --tls-auth for more background.)
 >
 > Encrypting (and authenticating) control channel packets:
+
 > - provides more privacy by hiding the certificate used for the TLS connection,
 > - makes it harder to identify OpenVPN traffic as such,
 > - provides "poor-man's" post-quantum security, against attackers who will never know the pre-shared key (i.e. no forward secrecy).
